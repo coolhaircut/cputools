@@ -1,0 +1,46 @@
+#!/bin/bash
+# Utility for setting cpu frequency on dual xeon CPUs
+
+# Root check
+if [[ $EUID -ne 0 ]]; then
+  echo 'Please run this script as root.'
+  exit 1
+fi
+
+# cpupower bin check
+if [[ "$(command -v cpupower)" == "" ]]; then
+  echo 'Please install the cpupower utility:'
+  echo '    sudo apt-get install -y linux-tools-generic linux-tools-common'
+  exit 2
+fi
+
+# Min/Max/Gov Default Values for Xeon E5-2683v4
+CPU0_MIN='2.1Ghz'
+CPU0_MAX='3.0Ghz'
+CPU0_GOV='ondemand'
+
+CPU1_MIN='2.1Ghz'
+CPU1_MAX='3.0Ghz'
+CPU1_GOV='ondemand'
+
+# Define CPUS
+declare -a CPU0=(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47)
+declare -a CPU1=(16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63)
+
+# Source config
+if [[ -f "/etc/set-cpupower.conf" ]]; then
+  echo "Loading configuration file..."
+  source "/etc/set-cpupower.conf"
+fi
+
+# CPU 0
+echo 'Setting CPU 0...'
+for c in ${CPU0[@]}; do
+  cpupower -c $c frequency-set --min ${CPU0_MIN-1.2Ghz} --max ${CPU0_MAX-3.0Ghz} -g ${CPU0_GOV-ondemand}
+done
+
+# CPU1
+echo 'Setting CPU 1...'
+for c in ${CPU1[@]}; do
+  cpupower -c $c frequency-set --min ${CPU1_MIN-1.2Ghz} --max ${CPU1_MAX-3.0Ghz} -g ${CPU1_GOV-ondemand}
+done

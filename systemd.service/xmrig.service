@@ -1,0 +1,14 @@
+[Unit]
+Description=XMRig with CPU frequency PreExec
+ConditionPathExists=/etc/xmrig.json 
+ConditionPathExists=/usr/local/bin/set-cpupower
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStartPre=/usr/local/bin/set-cpupower
+ExecStart=/usr/local/bin/xmrig -c /etc/xmrig.json
+
+[Install]
+WantedBy=multi-user.target

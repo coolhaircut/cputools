@@ -1,0 +1,12 @@
+[Unit]
+Description=Set the CPU frequency with set-cpupower srcript
+ConditionPathExists=/usr/local/bin/set-cpupower
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+ExecStart=/usr/local/bin/set-cpupower
+
+[Install]
+WantedBy=multi-user.target
